@@ -7,61 +7,104 @@
 
 
 const clearBtn = document.getElementById('clearC')
-const screen = window.document.getElementsByClassName('calc__screen temp')
+const screen = window.document.querySelector('.calc__screen')
 const calc = document.querySelector('.calc__btn-container')
-console.dir(calc);
 
+const OPERATION = {
+    sum: '+',
+    subtract: '-',
+    multiply: '*',
+    divide: '/',
 
-const printLog = function() {
-    console.log(' YRAAAAA! CLICK!!!!!!!!!')
 }
 
-// let userName = {
-//     firstName: null,
-//     sayHi() {
-//         console.log('Привет');
-//     }
-// }
 
-// userName.firstName = "Vlad"
-// console.log(userName.firstName);
+const calculateData = {
+    num1: '',
+    num2: '',
+    sign: '',
+    result: '',
+}
 
-// userName.sayHi()
+function sum(num1, num2) {
+    return (+num1) + (+num2)
+}
 
-// userName.sayHi = 'тут был метод'
-// userName.sayHi()
+function subtract(num1, num2) {
+    return (+num1) - (+num2)
+}
 
-// clearBtn.onclick = printLog
+function multiply(num1, num2) {
+    return (+num1) * (+num2)
+}
 
-console.dir(clearBtn);
+function divide(num1, num2) {
+    return (+num1) / (+num2)
+}
+
+function calculate(num1, num2, sign) {
+    switch (sign) {
+        case OPERATION.sum:
+            calculateData.result = String(sum(num1, num2))
+            break;
+        case OPERATION.subtract:
+            calculateData.result = String(subtract(num1, num2))
+            break;
+        case OPERATION.multiply:
+            calculateData.result = String(multiply(num1, num2))
+            break;
+        case OPERATION.divide:
+            calculateData.result = String(divide(num1, num2))
+            break;
+    }
+}
+
+
 clearBtn.addEventListener('click', function(event) {
-    console.log(event);
-    console.dir(event.target.textContent);
-    printLog()
+    console.log('Start Clear');
+    calculateData.num1 = ''
+    calculateData.num2 = ''
+    calculateData.sign = ''
+    screen.value = ''
 })
 
+function onClickDigits(event) {
 
-const digits = document.querySelectorAll('.digit')
-console.log(digits);
+    if (event.target.classList.contains('digit')) {
+        const pressNum = event.target.textContent
 
-// for (let i = 0; i < digits.length; i++) {
-//     digits[i].addEventListener('click', function(event) {
-//         screen[0].value = event.target.textContent
-//     })
-// }
+        if (calculateData.sign === '') {
+            screen.value += pressNum
+            calculateData.num1 = screen.value
+        } else {
+            calculateData.num2 += pressNum
+            screen.value = calculateData.num2
+        }
+    }
+
+}
+
+
+function onClickOperations(event) {
+    if (event.target.classList.contains('btn_operation')) {
+        const pressOperator = event.target.textContent
+        calculateData.sign = pressOperator
+        screen.value = pressOperator
+    }
+
+    if (event.target.classList.contains('btn_equal')) {
+        console.log('btn_equal');
+        calculateData.num1 = calculateData.result
+        calculateData.num2 = ''
+        calculateData.sign = ''
+        screen.value = calculateData.num1
+    }
+}
 
 calc.addEventListener('click', function(event) {
-    console.dir(event.target);
-    if (event.target.classList.contains('digit')) {
-        screen[0].value = event.target.textContent
-    }
-})
 
-// получение элментов 
-// не забывать что некоторые способы возвращают коллекцию
-// что такое событие?
-// 3 способа навесить слушатель события на элемент
-// знать addEventListener, какие аргументы нужно передавать
-// что приходит в качестве параметра в передаваемый второй аргумент 
-// что такое target
-// classList, attributes, classList.contains
+    onClickDigits(event)
+    onClickOperations(event)
+    calculate(calculateData.num1, calculateData.num2, calculateData.sign)
+
+})
